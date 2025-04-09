@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #D4C9BE;
+      background-color: #f4f6f9;
       padding: 30px;
       color: #333;
     }
@@ -15,7 +15,7 @@
     .container {
       max-width: 700px;
       margin: auto;
-      background-color: #F1EFEC;
+      background-color: #fff;
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -23,7 +23,7 @@
 
     h2 {
       text-align: center;
-      color: #123458
+      color: crimson;
     }
 
     label {
@@ -63,7 +63,7 @@
 
     .copy-btn {
       position: relative;
-      background-color: #2196F3;
+      background-color: crimson;
       border: none;
       color: white;
       padding: 6px 6px;
@@ -76,29 +76,12 @@
       font-family: 'Courier New', Courier, monospace;
       margin-top: 10px;
     }
-    a {
-      display: block;
-      margin: 10px 0;
-      text-decoration: none;
-      color: #2196F3;
-      font-size: 16px;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2 style="color: crimson;">Fee Summary Calculator</h2>
-    <a href="/kpi.html">Kpi Report</a>
+    <h2>Fee Summary Calculator</h2>
 
-    <label for="templateSelect">Select Template:</label>
-    <select id="templateSelect">
-      <option value="">-- Choose a Template --</option>
-      <option value="followup">Negative Cash Template</option>
-    
-    </select>
     <label for="currencySelect">Select Currency:</label>
     <select id="currencySelect">
       <option value="USD">$ USD</option>
@@ -108,10 +91,15 @@
       <option value="INR">₹ INR</option>
     </select>
 
-    
+    <label for="templateSelect">Select Template:</label>
+    <select id="templateSelect">
+      <option value="">-- Choose a Template --</option>
+      <option value="followup">Follow-Up</option>
+    </select>
+
+    <label>Total Course Fee: <input type="number" id="totalFee"></label>
     <label>Enrolled Sessions: <input type="number" id="enrolledSessions"></label>
     <label>Attended Sessions: <input type="number" id="attendedSessions"></label>
-    <label>Total Course Fee: <input type="number" id="totalFee"></label>
     <label>Amount Paid: <input type="number" id="amountPaid"></label>
     <label>Monthly Installment: <input type="number" id="monthlyInstallment"></label>
 
@@ -155,28 +143,26 @@
         return `
 Dear Parent,
 
-I hope this message finds you well. I’m writing to provide you with an update regarding your course fee structure and the current payment status. Please find the summary below:
+I hope you are doing well. I wanted to provide you with an update regarding your course fee structure and the current outstanding balance.  
 
-Fee Summary:
+Fee Summary:  
 
-Total Course Fee: ${format(totalFee)}
+Total Course Fee: ${format(totalFee, currency)}
 Enrolled Sessions: ${enrolledSessions}
 Attended Sessions: ${attendedSessions}
-Amount Paid: ${format(amountPaid)}
-Amount for Classes Taken: ${format(amountSupposedToPay)}
-Advance Cash on Record: ${format(outstandingBalance)}
-Remaining Amount to Pay: ${format(remainingAmount)}
+Amount Paid: ${format(amountPaid, currency)}
+Amount of classes taken: ${format(amountSupposedToPay, currency)}
+Advance Cash we’re having: ${format(outstandingBalance, currency)}
+Amount to pay: ${format(remainingAmount, currency)}
 
-Payment Link: 
+Payment Link:  
 
-To ensure that the classes continue to run smoothly and without any interruptions, we kindly request an upfront payment of (${(suggestedAmount / monthlyInstallment).toFixed(0)} x ${format(monthlyInstallment)}) USD, which totals to ${format(suggestedAmount)}.
+So we are requesting to pay the equivalent amount of (${(suggestedAmount / monthlyInstallment).toFixed(0)} x ${format(monthlyInstallment, currency)}) i.e. ${format(suggestedAmount, currency)} so that we may have some upfront amount with us.
 
-This advance will help us in better planning and resource allocation for your child’s sessions and will allow us to maintain the quality and consistency of the learning experience.
+We truly appreciate your understanding and cooperation in this matter. Please feel free to reach out if you have any questions or need any clarification.  
 
-We sincerely appreciate your continued support and cooperation. If you have any questions or require clarification, please don’t hesitate to reach out.
-
-Warm regards,
-Eshan Iqbal
+Warm regards,  
+Eshan Iqbal  
 Codeyoung
         `;
       }
