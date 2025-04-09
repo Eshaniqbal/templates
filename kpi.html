@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KPI Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #DDA853;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 20px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      font-size: 22px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #25D366;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background-color: #1EBE56;
+    }
+
+    .output-section {
+      margin-top: 20px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      background: #f4f4f4;
+      padding: 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+
+    .copy-msg {
+      margin-top: 8px;
+      font-size: 14px;
+      color: green;
+    }
+    a {
+      display: block;
+      margin: 10px 0;
+      text-decoration: none;
+      color: #9ACBD0;
+      font-size: 16px;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/index.html">Main Page</a>
+    <h2>KPI Report Generator</h2>
+
+    <label for="failures-mtd">No. of Failures MTD (Pending Payments)</label>
+    <input type="number" id="failures-mtd" placeholder="Enter value">
+
+    <label for="failures-today">No. of Failures Today (Pending Payments)</label>
+    <input type="number" id="failures-today" placeholder="Enter value">
+
+    <label for="mtd-achievement">MTD Collection Achievement (%)</label>
+    <input type="text" id="mtd-achievement" placeholder="Enter value">
+
+    <label for="overall-achievement">Overall Achievement (%)</label>
+    <input type="text" id="overall-achievement" placeholder="Enter value">
+
+    <button onclick="generateReport()">Generate & Copy</button>
+
+    <div class="output-section">
+      <pre id="report-output"></pre>
+      <div class="copy-msg" id="copy-msg"></div>
+    </div>
+  </div>
+
+  <script>
+    const todayDate = new Date().toLocaleDateString();
+
+    function generateReport() {
+      const failuresMTD = document.getElementById('failures-mtd').value || "N/A";
+      const failuresToday = document.getElementById('failures-today').value || "N/A";
+      const mtdAchievement = document.getElementById('mtd-achievement').value || "N/A";
+      const overallAchievement = document.getElementById('overall-achievement').value || "N/A";
+
+      const report = `*KPI Report*\n*Date:* ${todayDate}\n\n*No. of Failures MTD (Pending Payments):* ${failuresMTD}\n*No. of Failures for Today (Pending Payments):* ${failuresToday}\n*MTD Collection Achievement (%):* ${mtdAchievement}\n*Overall Achievement (%):* ${overallAchievement}`;
+
+      document.getElementById('report-output').textContent = report;
+
+      navigator.clipboard.writeText(report).then(() => {
+        document.getElementById('copy-msg').textContent = "Copied to clipboard ✅";
+      }).catch(() => {
+        document.getElementById('copy-msg').textContent = "Failed to copy ❌";
+      });
+    }
+  </script>
+</body>
+</html>

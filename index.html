@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fee Summary Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #D4C9BE;
+      padding: 30px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background-color: #F1EFEC;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #123458
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0;
+      font-size: 16px;
+    }
+
+    input, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 250px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      font-size: 16px;
+      background-color: crimson;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .output-container {
+      margin-top: 25px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fff;
+      position: relative;
+    }
+
+    .copy-btn {
+      position: relative;
+      background-color: #2196F3;
+      border: none;
+      color: white;
+      padding: 6px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #outputText {
+      white-space: pre-wrap;
+      font-family: 'Courier New', Courier, monospace;
+      margin-top: 10px;
+    }
+    a {
+      display: block;
+      margin: 10px 0;
+      text-decoration: none;
+      color: #2196F3;
+      font-size: 16px;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 style="color: crimson;">Fee Summary Calculator</h2>
+    <a href="/kpi.html">Kpi Report</a>
+
+    <label for="templateSelect">Select Template:</label>
+    <select id="templateSelect">
+      <option value="">-- Choose a Template --</option>
+      <option value="followup">Negative Cash Template</option>
+    
+    </select>
+    <label for="currencySelect">Select Currency:</label>
+    <select id="currencySelect">
+      <option value="USD">$ USD</option>
+      <option value="CAD">C$ CAD</option>
+      <option value="GBP">£ GBP</option>
+      <option value="EUR">€ EUR</option>
+      <option value="INR">₹ INR</option>
+    </select>
+
+    
+    <label>Enrolled Sessions: <input type="number" id="enrolledSessions"></label>
+    <label>Attended Sessions: <input type="number" id="attendedSessions"></label>
+    <label>Total Course Fee: <input type="number" id="totalFee"></label>
+    <label>Amount Paid: <input type="number" id="amountPaid"></label>
+    <label>Monthly Installment: <input type="number" id="monthlyInstallment"></label>
+
+    <button id="calculate">Generate</button>
+
+    <div id="outputBox" class="output-container" style="display: none;">
+      <button class="copy-btn" onclick="copyText()">Copy</button>
+      <div id="outputText"></div>
+    </div>
+  </div>
+
+  <script>
+    const currencySymbols = {
+      USD: '$',
+      CAD: 'C$',
+      GBP: '£',
+      EUR: '€',
+      INR: '₹'
+    };
+
+    function format(amount, currencyCode) {
+      const symbol = currencySymbols[currencyCode] || '$';
+      return `${symbol}${parseFloat(amount).toFixed(2)}`;
+    }
+
+    const templates = {
+      followup: (data) => {
+        const {
+          totalFee,
+          enrolledSessions,
+          attendedSessions,
+          amountPaid,
+          amountSupposedToPay,
+          outstandingBalance,
+          monthlyInstallment,
+          suggestedAmount,
+          remainingAmount,
+          currency
+        } = data;
+
+        return `
+Dear Parent,
+
+I hope this message finds you well. I’m writing to provide you with an update regarding your course fee structure and the current payment status. Please find the summary below:
+
+Fee Summary:
+
+Total Course Fee: ${format(totalFee)}
+Enrolled Sessions: ${enrolledSessions}
+Attended Sessions: ${attendedSessions}
+Amount Paid: ${format(amountPaid)}
+Amount for Classes Taken: ${format(amountSupposedToPay)}
+Advance Cash on Record: ${format(outstandingBalance)}
+Remaining Amount to Pay: ${format(remainingAmount)}
+
+Payment Link: 
+
+To ensure that the classes continue to run smoothly and without any interruptions, we kindly request an upfront payment of (${(suggestedAmount / monthlyInstallment).toFixed(0)} x ${format(monthlyInstallment)}) USD, which totals to ${format(suggestedAmount)}.
+
+This advance will help us in better planning and resource allocation for your child’s sessions and will allow us to maintain the quality and consistency of the learning experience.
+
+We sincerely appreciate your continued support and cooperation. If you have any questions or require clarification, please don’t hesitate to reach out.
+
+Warm regards,
+Eshan Iqbal
+Codeyoung
+        `;
+      }
+    };
+
+    document.getElementById("calculate").addEventListener("click", function () {
+      const currency = document.getElementById("currencySelect").value;
+      const totalFee = parseFloat(document.getElementById("totalFee").value) || 0;
+      const enrolledSessions = parseFloat(document.getElementById("enrolledSessions").value) || 1;
+      const attendedSessions = parseFloat(document.getElementById("attendedSessions").value) || 0;
+      const amountPaid = parseFloat(document.getElementById("amountPaid").value) || 0;
+      const monthlyInstallment = parseFloat(document.getElementById("monthlyInstallment").value) || 0;
+      const selectedTemplate = document.getElementById("templateSelect").value;
+
+      const perSessionFee = totalFee / enrolledSessions;
+      const amountSupposedToPay = attendedSessions * perSessionFee;
+      const outstandingBalance = amountPaid - amountSupposedToPay;
+      const remainingAmount = totalFee - amountPaid;
+
+      let suggestedAmount = monthlyInstallment;
+      if (Math.abs(outstandingBalance) >= 2 * monthlyInstallment) {
+        suggestedAmount = monthlyInstallment * 3;
+      } else if (Math.abs(outstandingBalance) >= monthlyInstallment) {
+        suggestedAmount = monthlyInstallment * 2;
+      }
+
+      const data = {
+        totalFee,
+        enrolledSessions,
+        attendedSessions,
+        amountPaid,
+        amountSupposedToPay,
+        outstandingBalance,
+        monthlyInstallment,
+        suggestedAmount,
+        remainingAmount,
+        currency
+      };
+
+      let text = "";
+      if (selectedTemplate && templates[selectedTemplate]) {
+        text = templates[selectedTemplate](data);
+      } else {
+        text = `
+Total Course Fee: ${format(totalFee, currency)}
+Enrolled Sessions: ${enrolledSessions}
+Attended Sessions: ${attendedSessions}
+Amount Paid: ${format(amountPaid, currency)}
+Per Session Fee: ${format(perSessionFee, currency)}
+Amount Supposed To Pay: ${format(amountSupposedToPay, currency)}
+Outstanding Balance: ${format(outstandingBalance, currency)}
+Monthly Installment: ${format(monthlyInstallment, currency)}
+Suggested Amount to Pay Now: ${format(suggestedAmount, currency)}
+Remaining Amount: ${format(remainingAmount, currency)}
+        `;
+      }
+
+      document.getElementById("outputText").innerText = text.trim();
+      document.getElementById("outputBox").style.display = "block";
+    });
+
+    function copyText() {
+      const text = document.getElementById("outputText").innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector(".copy-btn");
+        btn.innerText = "Copied!";
+        setTimeout(() => (btn.innerText = "Copy"), 2000);
+      });
+    }
+  </script>
+</body>
+</html>
